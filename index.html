@@ -1,0 +1,2105 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>南投校園腦力開發成長護照</title>
+  <style>
+    :root{
+      --bg:#dff7e8;
+      --card:#ffffff;
+      --text:#0b2a1b;
+      --muted:#2d6a4f;
+      --line:#0b2a1b33;
+
+      --good:#00b894;
+      --bad:#ff3b6b;
+      --warn:#ffb703;
+      --primary:#2f80ed;
+      --primary2:#1b5fc4;
+
+      --shadow: 0 10px 28px rgba(0,0,0,.12);
+      --radius:18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:var(--sans);
+      background:
+        radial-gradient(900px 520px at 15% 0%, rgba(47,128,237,.18), transparent 60%),
+        radial-gradient(900px 520px at 100% 10%, rgba(0,184,148,.18), transparent 60%),
+        var(--bg);
+      color:var(--text);
+    }
+    .wrap{max-width:1120px; margin:0 auto; padding:18px}
+    header{
+      display:flex; gap:14px; flex-wrap:wrap; align-items:center; justify-content:space-between;
+      padding:16px 14px;
+      background:linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,.85));
+      border:2px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+    .title{display:flex; flex-direction:column; gap:6px}
+    .title h1{margin:0; font-size:20px; letter-spacing:.4px}
+    .title p{margin:0; color:var(--muted); font-size:13px; line-height:1.4}
+    .tools{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+
+    button{
+      border:0; border-radius:14px; padding:10px 12px;
+      background:linear-gradient(180deg, var(--primary), var(--primary2));
+      color:white; font-weight:800;
+      cursor:pointer; box-shadow:0 10px 18px rgba(47,128,237,.18);
+      touch-action:manipulation;
+    }
+    button.secondary{
+      background:linear-gradient(180deg, rgba(11,42,27,.08), rgba(11,42,27,.04));
+      box-shadow:none; border:2px solid var(--line);
+      color:var(--text); font-weight:800;
+    }
+    button:disabled{opacity:.55; cursor:not-allowed}
+
+    .pill{
+      padding:6px 10px;
+      border-radius:999px;
+      border:2px solid var(--line);
+      background:rgba(255,255,255,.9);
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
+    }
+    .panel{
+      background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.86));
+      border:2px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      margin-top:16px;
+    }
+    .panel h2{
+      margin:0; padding:14px 14px 10px;
+      font-size:15px; color:var(--muted);
+      border-bottom:2px solid var(--line);
+      font-weight:900;
+    }
+    .content{padding:14px}
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.88));
+      border:2px solid var(--line);
+      border-radius:var(--radius);
+      padding:14px;
+    }
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .big{font-size:18px; font-weight:900; letter-spacing:.3px}
+    .hint{color:var(--muted); font-size:13px; line-height:1.5; font-weight:700}
+    .sep{height:2px; background:var(--line); margin:12px 0}
+
+    .screen{display:none}
+    .screen.active{display:block}
+
+    .form{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+      margin-top:10px;
+    }
+    @media(max-width:720px){ .form{grid-template-columns:1fr} }
+    label{font-size:12px; font-weight:900; color:var(--muted)}
+    input, select{
+      width:100%;
+      margin-top:6px;
+      padding:12px 12px;
+      border-radius:14px;
+      border:2px solid var(--line);
+      background:rgba(255,255,255,.95);
+      font-weight:800;
+      outline:none;
+    }
+    .danger{color:var(--bad); font-weight:900}
+    .ok{color:var(--good); font-weight:900}
+
+    .map{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap:12px;
+      margin-top:12px;
+    }
+    @media(max-width:820px){ .map{grid-template-columns:1fr} }
+
+    .level{
+      border:2px solid var(--line);
+      border-radius:16px;
+      background:rgba(255,255,255,.9);
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .level.locked{opacity:.55}
+    .level .top{display:flex; justify-content:space-between; gap:10px; align-items:flex-start}
+    .badge{
+      padding:6px 10px;
+      border-radius:999px;
+      font-weight:900;
+      font-size:12px;
+      border:2px solid var(--line);
+      background:rgba(47,128,237,.10);
+    }
+    .stars{font-size:16px; letter-spacing:2px}
+    .stars .on{color:var(--warn)}
+    .stars .off{color:#bbb}
+
+    .kpi{
+      display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:10px;
+      margin-top:12px;
+    }
+    @media(max-width:620px){ .kpi{grid-template-columns:1fr} }
+    .kpi .box{
+      border:2px solid var(--line);
+      border-radius:14px;
+      padding:10px 12px;
+      background:rgba(255,255,255,.9);
+    }
+    .kpi .label{color:var(--muted); font-size:12px; font-weight:900}
+    .kpi .value{font-family:var(--mono); font-size:18px; margin-top:6px; font-weight:900}
+
+    .stage{
+      margin-top:12px;
+      border:2px dashed rgba(11,42,27,.35);
+      border-radius:16px;
+      padding:12px;
+      background:rgba(255,255,255,.72);
+      min-height:320px;
+    }
+    .toast{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:2px solid var(--line);
+      background:rgba(255,255,255,.9);
+      color:var(--muted);
+      font-size:13px;
+      font-weight:800;
+    }
+    code.inline{
+      font-family:var(--mono);
+      background:rgba(0,0,0,.06);
+      padding:2px 6px;
+      border-radius:8px;
+      border:1px solid rgba(0,0,0,.12);
+    }
+
+    .controls{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    @media(max-width:520px){ .controls{grid-template-columns:1fr} }
+    .ctrl-card{
+      border:2px solid var(--line);
+      border-radius:16px;
+      background:rgba(255,255,255,.9);
+      padding:10px;
+    }
+    .ctrl-title{font-weight:900; color:var(--muted); font-size:12px; margin-bottom:8px}
+    .pad{
+      display:grid;
+      grid-template-columns: 64px 64px 64px;
+      grid-template-rows: 64px 64px 64px;
+      gap:8px;
+      justify-content:center;
+    }
+    .pad button{
+      width:64px; height:64px; padding:0;
+      border-radius:16px;
+      border:2px solid var(--line);
+      background:rgba(47,128,237,.12);
+      color:var(--text);
+      font-weight:900;
+      box-shadow:none;
+    }
+    .pad .blank{background:transparent; border:0}
+    .ab{
+      display:flex; gap:10px; justify-content:center; flex-wrap:wrap;
+    }
+    .ab button{
+      width:96px; height:64px;
+      border-radius:18px;
+      border:2px solid var(--line);
+      color:white;
+      font-weight:900;
+      box-shadow:none;
+    }
+    .ab .a{background:rgba(0,184,148,.95)}
+    .ab .b{background:rgba(255,59,107,.95)}
+    .ab .abbtn{background:rgba(255,183,3,.95); color:#222}
+    .small{font-size:12px}
+
+    .mb-debug{
+      margin-top:10px;
+      padding:10px;
+      border:2px solid rgba(0,0,0,.18);
+      border-radius:14px;
+      background:#fff;
+      max-height:160px;
+      overflow:auto;
+      font-family:var(--mono);
+      font-size:12px;
+      white-space:pre-wrap;
+      color:#123;
+    }
+
+    .rt-box{
+      display:grid; place-items:center;
+      min-height:250px;
+      border-radius:16px;
+      background:rgba(47,128,237,.10);
+      border:3px solid rgba(47,128,237,.35);
+      user-select:none;
+      touch-action:manipulation;
+    }
+    .rt-box.ready{ background: rgba(0,184,148,.10); border-color: rgba(0,184,148,.55);}
+    .rt-box.wait{ background: rgba(255,183,3,.12); border-color: rgba(255,183,3,.55);}
+    .rt-box.go{ background: rgba(47,128,237,.18); border-color: rgba(47,128,237,.65);}
+    .rt-tap{
+      margin-top:10px;
+      padding:12px 14px;
+      border-radius:16px;
+      border:2px solid var(--line);
+      background:white;
+      font-weight:900;
+      display:inline-block;
+    }
+
+    .vs-grid{
+      display:grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap:6px;
+      max-width:540px;
+      margin:0 auto;
+      padding:10px;
+    }
+    .vs-cell{
+      aspect-ratio:1/1;
+      border-radius:12px;
+      border:2px solid var(--line);
+      background:rgba(255,255,255,.9);
+      display:grid; place-items:center;
+      cursor:pointer;
+      user-select:none;
+      font-weight:900;
+      color:#123;
+      touch-action:manipulation;
+    }
+    .vs-cell.good{ outline:4px solid rgba(0,184,148,.75); }
+    .vs-cell.bad{ outline:4px solid rgba(255,59,107,.75); }
+
+    .mm-grid{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:10px;
+      max-width:540px;
+      margin:0 auto;
+    }
+    @media(max-width:420px){ .mm-grid{grid-template-columns: repeat(3, 1fr);} }
+    .mm-card{
+      aspect-ratio:1/1;
+      border-radius:16px;
+      border:2px solid var(--line);
+      background:rgba(255,255,255,.9);
+      display:grid; place-items:center;
+      cursor:pointer;
+      user-select:none;
+      font-size:28px;
+      font-weight:900;
+      touch-action:manipulation;
+      position:relative;
+    }
+    .mm-card.revealed{
+      background:rgba(47,128,237,.14);
+      border-color:rgba(47,128,237,.75);
+    }
+    .mm-card.matched{
+      background:rgba(0,184,148,.14);
+      border-color:rgba(0,184,148,.75);
+      cursor:default;
+      opacity:.95;
+    }
+    .cursor{
+      outline:5px solid rgba(255,183,3,.92) !important;
+      box-shadow:0 0 0 6px rgba(255,183,3,.16);
+    }
+
+    .maze-wrap{display:flex; gap:14px; flex-wrap:wrap; align-items:flex-start; justify-content:center;}
+    .maze-grid{
+      display:grid;
+      grid-template-columns: repeat(6, 46px);
+      gap:6px;
+      padding:10px;
+      border-radius:16px;
+      border:2px solid var(--line);
+      background:rgba(255,255,255,.86);
+    }
+    .mz{
+      width:46px; height:46px;
+      border-radius:12px;
+      border:2px solid var(--line);
+      background:rgba(255,255,255,.9);
+      display:grid; place-items:center;
+      user-select:none;
+      font-family:var(--mono);
+      font-size:14px;
+      font-weight:900;
+    }
+    .mz.start{ outline:3px solid rgba(0,184,148,.75)}
+    .mz.end{ outline:3px solid rgba(255,183,3,.85)}
+    .mz.wall{ background:rgba(0,0,0,.14); border-color:rgba(0,0,0,.18)}
+    .mz.player{ outline:4px solid rgba(47,128,237,.75); }
+    .mz.pathhint{ background:rgba(0,184,148,.16); border-color:rgba(0,184,148,.55)}
+
+    .gng-box{
+      display:grid; place-items:center;
+      min-height:250px;
+      border-radius:16px;
+      background:rgba(255,255,255,.9);
+      border:2px solid var(--line);
+      user-select:none;
+    }
+    .gng-signal{
+      font-size:42px; font-weight:1000;
+      padding:18px 22px;
+      border-radius:18px;
+      border:3px solid var(--line);
+      background:white;
+      text-align:center;
+      min-width:220px;
+      cursor:pointer;
+      touch-action:manipulation;
+    }
+
+    .sd-wrap{display:flex; flex-direction:column; gap:10px; align-items:center}
+    .sd-grid{
+      display:grid;
+      grid-template-columns: repeat(4, 56px);
+      gap:8px;
+      padding:10px;
+      border-radius:16px;
+      border:2px solid var(--line);
+      background:rgba(255,255,255,.86);
+    }
+    .sd-cell{
+      width:56px; height:56px;
+      border-radius:14px;
+      border:2px solid var(--line);
+      background:white;
+      color:var(--text);
+      display:grid; place-items:center;
+      font-size:18px;
+      font-family:var(--mono);
+      cursor:pointer;
+      user-select:none;
+      font-weight:900;
+      touch-action:manipulation;
+      position:relative;
+    }
+    .sd-cell.fixed{
+      background:rgba(47,128,237,.12);
+      border-color:rgba(47,128,237,.55);
+      cursor:default;
+    }
+    .sd-cell.bad{ outline:4px solid rgba(255,59,107,.75); }
+    .sd-cell.pending{ outline:4px solid rgba(255,183,3,.85); } /* 3秒等待狀態（黃框） */
+  </style>
+</head>
+
+<body>
+<div class="wrap">
+  <header>
+    <div class="title">
+      <h1>南投校園腦力開發成長護照</h1>
+      <p>填寫護照 → 關卡挑戰（1~6）→ 成績自動上傳（匿名可填）→ 班級/個人成長分析（在試算表製作圖表）</p>
+    </div>
+    <div class="tools">
+      <span class="pill" id="profileTag">尚未登入</span>
+      <button class="secondary" id="btnLogout">清除護照</button>
+      <button class="secondary" id="btnExportLocal">匯出本機 CSV</button>
+    </div>
+  </header>
+
+  <section class="panel screen" id="screenPassport">
+    <h2>成長護照登入</h2>
+    <div class="content">
+      <div class="card">
+        <div class="big">請先填寫基本資料（必填）</div>
+        <div class="hint">暱稱/代號格式不限：例 <code class="inline">701-12</code>、<code class="inline">A01</code>、<code class="inline">阿賢</code> 都可以。</div>
+        <div class="form">
+          <div>
+            <label>就讀學校（必填）</label>
+            <input id="inSchool" placeholder="例：南投國中 / XX國中" />
+          </div>
+          <div>
+            <label>年級（必填）</label>
+            <select id="inGrade">
+              <option value="">請選擇</option>
+              <option value="7">七年級</option>
+              <option value="8">八年級</option>
+              <option value="9">九年級</option>
+            </select>
+          </div>
+          <div>
+            <label>班級（必填）</label>
+            <input id="inClass" placeholder="例：701 / 802 / 901" />
+          </div>
+          <div>
+            <label>暱稱/代號（必填）</label>
+            <input id="inNick" placeholder="例：701-12 / A01 / 阿賢" />
+          </div>
+        </div>
+        <div class="sep"></div>
+        <div class="row" style="justify-content:space-between">
+          <div class="hint" id="passportMsg">填完後才能進入關卡挑戰。</div>
+          <button id="btnEnter">進入關卡地圖</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel screen" id="screenMap">
+    <h2>關卡地圖</h2>
+    <div class="content">
+      <div class="card">
+        <div class="row" style="justify-content:space-between">
+          <div>
+            <div class="big">挑戰進度</div>
+            <div class="hint">通關才能解鎖下一關；每次完成都會上傳到試算表（匿名可填）。</div>
+          </div>
+          <div class="row">
+            <button class="secondary" id="btnBackPassport">返回護照</button>
+          </div>
+        </div>
+        <div class="sep"></div>
+        <div class="row">
+          <span class="pill" id="levelTag">已解鎖：1</span>
+          <span class="pill" id="uploadTag">上傳狀態：尚未上傳</span>
+          <button class="secondary" id="btnTestUpload">測試上傳</button>
+        </div>
+        <div class="map" id="mapGrid"></div>
+        <div class="toast" id="mapToast">提示：從第 1 關開始。</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel screen" id="screenGame">
+    <h2 id="gameTitle">—</h2>
+    <div class="content">
+      <div class="card">
+        <div class="row" style="justify-content:space-between">
+          <div>
+            <div class="big" id="gameName">—</div>
+            <div class="hint" id="gameDesc">—</div>
+          </div>
+          <div class="row">
+            <button id="btnStart">開始</button>
+            <button class="secondary" id="btnReset">重設</button>
+            <button class="secondary" id="btnBackMap">回關卡</button>
+          </div>
+        </div>
+
+        <div class="kpi">
+          <div class="box">
+            <div class="label">本次成績</div>
+            <div class="value" id="kpi1">—</div>
+          </div>
+          <div class="box">
+            <div class="label">次要指標</div>
+            <div class="value" id="kpi2">—</div>
+          </div>
+          <div class="box">
+            <div class="label">近 10 次平均</div>
+            <div class="value" id="kpi3">—</div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="ctrl-card">
+            <div class="ctrl-title">平板方向鍵（迷宮/游標類）</div>
+            <div class="pad">
+              <div class="blank"></div>
+              <button data-act="up">▲</button>
+              <div class="blank"></div>
+              <button data-act="left">◀</button>
+              <button data-act="noop">•</button>
+              <button data-act="right">▶</button>
+              <div class="blank"></div>
+              <button data-act="down">▼</button>
+              <div class="blank"></div>
+            </div>
+            <div class="hint small" style="text-align:center;margin-top:8px">觸控可玩（不需鍵盤）</div>
+          </div>
+
+          <div class="ctrl-card">
+            <div class="ctrl-title">A / B / AB（選擇/重設/開始）</div>
+            <div class="ab">
+              <button class="a" data-act="A">A</button>
+              <button class="b" data-act="B">B</button>
+              <button class="abbtn" data-act="AB">A+B</button>
+            </div>
+            <div class="hint small" style="text-align:center;margin-top:8px">
+              A：選擇/反應　B：重設　AB：開始（等同「開始」按鈕）
+            </div>
+          </div>
+        </div>
+
+        <div class="sep"></div>
+        <div class="stage" id="stage"></div>
+        <div class="toast" id="toast">提示：按「開始」進行本關挑戰。</div>
+
+        <div class="sep"></div>
+        <div class="card" style="background:rgba(255,255,255,.9)">
+          <div class="row" style="justify-content:space-between; align-items:flex-start">
+            <div>
+              <div class="big">micro:bit v1 連線（Web Serial）</div>
+              <div class="hint">
+                micro:bit 端透過 USB 序列送：<code class="inline">A</code>、<code class="inline">B</code>、<code class="inline">AB</code>、<code class="inline">U/D/L/R</code>（每次一行）。<br/>
+                本頁映射：AB=開始、A=選擇/反應、B=重設、方向=移動/游標/迷宮。
+              </div>
+            </div>
+            <div class="row">
+              <button class="secondary" id="btnMBConnect">連線 micro:bit</button>
+              <span class="pill" id="mbStatus">未連線</span>
+            </div>
+          </div>
+          <div class="mb-debug" id="mbDebug">micro:bit debug log:\n</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+/* ======================================================
+   ✅ 你要改的：Apps Script Web App URL
+====================================================== */
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwdFo6iTYZ6edVLPNDTP_kSvtBHnLvTDp_8bXpJnjooBer6y5qxsZzuFgC0T7oTSVRm/exec";
+
+/* ======================================================
+   localStorage keys
+====================================================== */
+const LS_PROFILE = "nt_brain_passport_profile_v1";
+const LS_PROGRESS = "nt_brain_passport_progress_v1";
+const LS_SCORES = "nt_brain_passport_scores_v1";
+
+/* ======================================================
+   UI refs
+====================================================== */
+const screenPassport = document.getElementById("screenPassport");
+const screenMap = document.getElementById("screenMap");
+const screenGame = document.getElementById("screenGame");
+
+const profileTag = document.getElementById("profileTag");
+const levelTag = document.getElementById("levelTag");
+const uploadTag = document.getElementById("uploadTag");
+const mapToast = document.getElementById("mapToast");
+
+const stageEl = document.getElementById("stage");
+const toastEl = document.getElementById("toast");
+const gameTitleEl = document.getElementById("gameTitle");
+const gameNameEl = document.getElementById("gameName");
+const gameDescEl = document.getElementById("gameDesc");
+const kpi1El = document.getElementById("kpi1");
+const kpi2El = document.getElementById("kpi2");
+const kpi3El = document.getElementById("kpi3");
+const btnStart = document.getElementById("btnStart");
+const btnReset = document.getElementById("btnReset");
+
+function toast(msg){ toastEl.textContent = msg; }
+function mapMsg(msg){ mapToast.textContent = msg; }
+function setKPI(a="—", b="—", c="—"){ kpi1El.textContent=a; kpi2El.textContent=b; kpi3El.textContent=c; }
+
+/* ======================================================
+   Profile & progress
+====================================================== */
+function getProfile(){
+  try { return JSON.parse(localStorage.getItem(LS_PROFILE) || "null"); } catch(e){ return null; }
+}
+function setProfile(p){ localStorage.setItem(LS_PROFILE, JSON.stringify(p)); }
+function clearProfile(){
+  localStorage.removeItem(LS_PROFILE);
+  localStorage.removeItem(LS_PROGRESS);
+}
+function getProgress(){
+  try {
+    return JSON.parse(localStorage.getItem(LS_PROGRESS) || "null") || { unlocked:1, stars:{}, passed:{} };
+  } catch(e){
+    return { unlocked:1, stars:{}, passed:{} };
+  }
+}
+function setProgress(pg){ localStorage.setItem(LS_PROGRESS, JSON.stringify(pg)); }
+function playerIdFromProfile(p){
+  const raw = `${p.school}|${p.grade}|${p.class}|${p.nickname}`.trim();
+  let h = 2166136261;
+  for(let i=0;i<raw.length;i++){
+    h ^= raw.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return "P" + (h >>> 0).toString(16).toUpperCase();
+}
+function updateProfileTag(){
+  const p = getProfile();
+  if(!p){ profileTag.textContent = "尚未登入"; return; }
+  profileTag.textContent = `已登入：${p.school}｜${p.grade}年級｜${p.class}｜${p.nickname}｜ID:${p.player_id}`;
+}
+
+/* ======================================================
+   Scores local store + CSV
+====================================================== */
+function nowISO(){ return new Date().toISOString(); }
+function getScores(){
+  try { return JSON.parse(localStorage.getItem(LS_SCORES) || "[]"); }
+  catch(e){ return []; }
+}
+function saveLocalScore(entry){
+  const arr = getScores();
+  arr.push(entry);
+  localStorage.setItem(LS_SCORES, JSON.stringify(arr));
+}
+function downloadText(filename, text){
+  const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+function exportCSV(){
+  const rows = getScores();
+  const header = ["timestamp","player_id","school","grade","class","nickname","level","game_key","score","metric1","metric2","pass","stars","device","notes"];
+  const lines = [header.join(",")];
+  for(const r of rows){
+    const line = header.map(k => {
+      let v = (r[k] ?? "");
+      v = String(v).replaceAll('"','""');
+      return `"${v}"`;
+    }).join(",");
+    lines.push(line);
+  }
+  downloadText("nt_brain_passport_local.csv", lines.join("\n"));
+}
+
+/* ======================================================
+   Screen navigation
+====================================================== */
+function showScreen(which){
+  [screenPassport, screenMap, screenGame].forEach(s=>s.classList.remove("active"));
+  which.classList.add("active");
+}
+
+/* ======================================================
+   Upload (beacon first, fallback fetch no-cors)
+====================================================== */
+async function uploadAttempt(payload){
+  if(!WEB_APP_URL || WEB_APP_URL.includes("PASTE_YOUR_WEB_APP_URL_HERE")){
+    uploadTag.textContent = "上傳狀態：未設定 Web App URL";
+    return false;
+  }
+
+  const form = new URLSearchParams(payload);
+
+  try{
+    if(navigator.sendBeacon){
+      const ok = navigator.sendBeacon(WEB_APP_URL, form);
+      uploadTag.textContent = ok ? "上傳狀態：已送出（beacon）" : "上傳狀態：beacon 送出失敗";
+      return ok;
+    }
+  }catch(e){}
+
+  try{
+    await fetch(WEB_APP_URL, {
+      method:"POST",
+      mode:"no-cors",
+      headers: {"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},
+      body: form.toString()
+    });
+    uploadTag.textContent = "上傳狀態：已送出（fetch no-cors）";
+    return true;
+  }catch(e){
+    uploadTag.textContent = "上傳狀態：送出失敗";
+    return false;
+  }
+}
+
+/* ======================================================
+   Virtual input (touch panel + microbit)
+====================================================== */
+const inputDebounce = { lastAction:"", lastTime:0, minGapMs:120 };
+function dispatchVirtual(action){
+  const t = performance.now();
+  if (action === inputDebounce.lastAction && (t - inputDebounce.lastTime) < inputDebounce.minGapMs) return;
+  inputDebounce.lastAction = action;
+  inputDebounce.lastTime = t;
+  window.dispatchEvent(new CustomEvent("VIRTUAL_INPUT", {detail:{action}}));
+}
+document.querySelectorAll("[data-act]").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    const act = btn.getAttribute("data-act");
+    if(act==="noop") return;
+    dispatchVirtual(act);
+  }, {passive:true});
+});
+document.addEventListener("keydown", (e)=>{
+  if(e.code==="Space" || e.key===" " || e.key==="Spacebar") e.preventDefault();
+}, {passive:false});
+
+/* ======================================================
+   micro:bit v1 (Web Serial)
+====================================================== */
+let mbPort=null, mbReader=null, mbKeepReading=false;
+const mbStatusEl = document.getElementById("mbStatus");
+const mbDebugEl = document.getElementById("mbDebug");
+function setMBStatus(text, ok=false){
+  mbStatusEl.textContent = text;
+  mbStatusEl.style.borderColor = ok ? "rgba(0,184,148,.85)" : "";
+}
+function logMB(s){
+  mbDebugEl.textContent += s;
+  mbDebugEl.scrollTop = mbDebugEl.scrollHeight;
+}
+async function mbConnect(){
+  if(!("serial" in navigator)){
+    alert("此瀏覽器不支援 Web Serial。\n建議用 Chrome/Edge 桌機版連線 micro:bit。");
+    return;
+  }
+  try{
+    mbPort = await navigator.serial.requestPort();
+    await mbPort.open({ baudRate: 115200 });
+    setMBStatus("已連線", true);
+    mbKeepReading = true;
+    readMBLoop();
+  }catch(e){
+    console.error(e);
+    setMBStatus("連線失敗");
+  }
+}
+document.getElementById("btnMBConnect").addEventListener("click", mbConnect);
+
+const combo = { lastA:0, lastB:0, windowMs:450, cooldownMs:420, lastAB:0 };
+function noteA(){
+  const t = performance.now(); combo.lastA=t;
+  if (t - combo.lastB <= combo.windowMs && t - combo.lastAB > combo.cooldownMs){
+    combo.lastAB = t; dispatchVirtual("AB"); return true;
+  }
+  return false;
+}
+function noteB(){
+  const t = performance.now(); combo.lastB=t;
+  if (t - combo.lastA <= combo.windowMs && t - combo.lastAB > combo.cooldownMs){
+    combo.lastAB = t; dispatchVirtual("AB"); return true;
+  }
+  return false;
+}
+function parseCommands(raw){
+  const text = (raw||"").toUpperCase();
+  const hasAB = text.includes("AB") || text.includes("A+B") || text.includes("A B") || text.includes("A&B");
+  if (hasAB){ dispatchVirtual("AB"); return; }
+
+  const hasA = text.includes("BTN_A") || text.includes("BUTTONA") || /\bA\b/.test(text);
+  const hasB = text.includes("BTN_B") || text.includes("BUTTONB") || /\bB\b/.test(text);
+  const hasU = /\bU\b/.test(text) || text.includes("UP");
+  const hasD = /\bD\b/.test(text) || text.includes("DOWN");
+  const hasL = /\bL\b/.test(text) || text.includes("LEFT");
+  const hasR = /\bR\b/.test(text) || text.includes("RIGHT");
+
+  if(hasA){ dispatchVirtual("A"); noteA(); }
+  if(hasB){ dispatchVirtual("B"); noteB(); }
+  if(hasU) dispatchVirtual("U");
+  if(hasD) dispatchVirtual("D");
+  if(hasL) dispatchVirtual("L");
+  if(hasR) dispatchVirtual("R");
+}
+async function readMBLoop(){
+  if(!mbPort || !mbPort.readable) return;
+  const textDecoder = new TextDecoderStream();
+  const closed = mbPort.readable.pipeTo(textDecoder.writable).catch(()=>{});
+  const reader = textDecoder.readable.getReader();
+  mbReader = reader;
+  try{
+    while(mbKeepReading){
+      const {value, done} = await reader.read();
+      if(done) break;
+      if(value){ logMB(value); parseCommands(value); }
+    }
+  }catch(e){
+    console.error(e);
+    setMBStatus("中斷");
+  }finally{
+    reader.releaseLock();
+    await closed.catch(()=>{});
+  }
+}
+
+/* ======================================================
+   Game definitions (6 levels)
+====================================================== */
+let currentLevel = 1;
+let currentGameKey = null;
+let cleanupFn = ()=>{};
+
+const LEVELS = [
+  { level:1, key:"reaction", title:"第 1 關｜反應力挑戰", desc:"共 5 次反應，記錄平均反應時間。通關：平均 ≤ 450ms", init:initReaction },
+  { level:2, key:"visual",   title:"第 2 關｜視覺搜尋", desc:"找出唯一目標符號。通關：≤ 8 秒且錯誤 ≤ 2", init:initVisualSearch_CURSOR },
+  { level:3, key:"memory",   title:"第 3 關｜記憶配對", desc:"8 對配對完成。通關：≤ 70 秒", init:initMemoryMatch_CURSOR },
+  { level:4, key:"maze",     title:"第 4 關｜路徑記憶迷宮", desc:"提示 3 秒後消失，走到終點。通關：≤ 45 秒且走錯 ≤ 2", init:initMaze },
+  { level:5, key:"gng",      title:"第 5 關｜Go/No-Go 抑制控制", desc:"GO 要按、STOP 不按。通關：正確率 ≥ 85%", init:initGoNoGo },
+  { level:6, key:"sudoku",   title:"第 6 關｜迷你數獨 4×4", desc:"填完 4×4。通關：≤ 90 秒且錯誤 ≤ 3（錯誤數字停留超過3秒才算錯）", init:initSudoku4_CURSOR },
+];
+
+function deviceLabel(){
+  const ua = navigator.userAgent.toLowerCase();
+  if(ua.includes("android") || ua.includes("iphone") || ua.includes("ipad")) return "tablet/mobile";
+  return "desktop";
+}
+
+function meanLast(gameKey, field, n=10){
+  const arr = getScores().filter(x=>x.game_key===gameKey && typeof x[field]==="number");
+  const last = arr.slice(-n);
+  if(!last.length) return null;
+  return last.reduce((s,x)=>s+x[field],0)/last.length;
+}
+function renderKPIs(lastResult=null){
+  if(!currentGameKey) return;
+
+  let avgText = "—";
+  const mapField = {reaction:"metric1", visual:"metric1", memory:"metric1", maze:"metric1", gng:"metric1", sudoku:"metric1"};
+  const m = meanLast(currentGameKey, mapField[currentGameKey], 10);
+  if(m!=null){
+    if(currentGameKey==="reaction") avgText = `${Math.round(m)} ms`;
+    else if(currentGameKey==="gng") avgText = `${m.toFixed(1)} %`;
+    else avgText = `${(m/1000).toFixed(2)} s`;
+  }
+  if(lastResult) setKPI(lastResult.kpi1, lastResult.kpi2, avgText);
+  else setKPI("—","—",avgText);
+}
+
+function evaluatePass(level, gameKey, score, metric1, metric2){
+  let pass=false, stars=1, notes="";
+
+  if(level===1){
+    const avg = metric1;
+    pass = avg <= 450;
+    stars = avg <= 300 ? 3 : (avg <= 350 ? 2 : (pass ? 1 : 0));
+    notes = "avg_ms";
+  }
+  if(level===2){
+    const ms = metric1; const errors = metric2;
+    pass = (ms <= 8000) && (errors <= 2);
+    stars = (ms <= 4500 && errors===0) ? 3 : (ms <= 6000 && errors<=1 ? 2 : (pass ? 1 : 0));
+    notes = "visual_unique_target";
+  }
+  if(level===3){
+    const ms = metric1;
+    pass = ms <= 70000;
+    stars = ms <= 45000 ? 3 : (ms <= 60000 ? 2 : (pass ? 1 : 0));
+    notes = "memory_match";
+  }
+  if(level===4){
+    const ms = metric1; const wrong = metric2;
+    pass = (ms <= 45000) && (wrong <= 2);
+    stars = (ms <= 28000 && wrong===0) ? 3 : (ms <= 36000 && wrong<=1 ? 2 : (pass ? 1 : 0));
+    notes = "path_memory_maze";
+  }
+  if(level===5){
+    const acc = metric1;
+    pass = acc >= 85;
+    stars = acc >= 95 ? 3 : (acc >= 90 ? 2 : (pass ? 1 : 0));
+    notes = "go_no_go";
+  }
+  if(level===6){
+    const ms = metric1; const errors = metric2;
+    pass = (ms <= 90000) && (errors <= 3);
+    stars = (ms <= 45000 && errors<=1) ? 3 : (ms <= 65000 && errors<=2 ? 2 : (pass ? 1 : 0));
+    notes = "mini_sudoku_4x4";
+  }
+
+  return {pass, stars, notes};
+}
+
+/* ======================================================
+   Map rendering & flow
+====================================================== */
+const mapGrid = document.getElementById("mapGrid");
+
+function renderMap(){
+  const pg = getProgress();
+  levelTag.textContent = `已解鎖：${pg.unlocked}`;
+
+  mapGrid.innerHTML = "";
+  for(const lv of LEVELS){
+    const unlocked = lv.level <= pg.unlocked;
+    const passed = !!pg.passed[lv.level];
+    const stars = Number(pg.stars[lv.level] || 0);
+
+    const box = document.createElement("div");
+    box.className = "level" + (unlocked ? "" : " locked");
+    box.innerHTML = `
+      <div class="top">
+        <div>
+          <div class="big">${lv.title}</div>
+          <div class="hint">${lv.desc}</div>
+        </div>
+        <span class="badge">${passed ? "已通關" : (unlocked ? "可挑戰" : "未解鎖")}</span>
+      </div>
+      <div class="row" style="justify-content:space-between">
+        <div class="stars">
+          <span class="${stars>=1?'on':'off'}">★</span>
+          <span class="${stars>=2?'on':'off'}">★</span>
+          <span class="${stars>=3?'on':'off'}">★</span>
+        </div>
+        <button ${unlocked ? "" : "disabled"} data-level="${lv.level}">開始本關</button>
+      </div>
+    `;
+    box.querySelector("button").addEventListener("click", ()=>{
+      startLevel(lv.level);
+    }, {passive:true});
+    mapGrid.appendChild(box);
+  }
+}
+
+function startLevel(level){
+  const pg = getProgress();
+  if(level > pg.unlocked){
+    mapMsg("⚠️ 尚未解鎖此關卡。");
+    return;
+  }
+  currentLevel = level;
+  const lv = LEVELS.find(x=>x.level===level);
+  selectGame(lv);
+  showScreen(screenGame);
+}
+
+function selectGame(levelObj){
+  cleanupFn();
+  currentGameKey = levelObj.key;
+
+  gameTitleEl.textContent = levelObj.title;
+  gameNameEl.textContent = levelObj.title;
+  gameDescEl.textContent = levelObj.desc;
+
+  stageEl.innerHTML = "";
+  setKPI("—","—","—");
+  btnStart.disabled = false;
+  btnReset.disabled = false;
+
+  cleanupFn = levelObj.init();
+  renderKPIs();
+  toast("準備就緒：按「開始」進行本關挑戰。");
+}
+
+document.getElementById("btnBackMap").addEventListener("click", ()=>{
+  cleanupFn(); renderMap();
+  showScreen(screenMap);
+}, {passive:true});
+
+/* ======================================================
+   Passport actions
+====================================================== */
+document.getElementById("btnEnter").addEventListener("click", ()=>{
+  const school = document.getElementById("inSchool").value.trim();
+  const grade = document.getElementById("inGrade").value.trim();
+  const clazz = document.getElementById("inClass").value.trim();
+  const nick  = document.getElementById("inNick").value.trim();
+  const msg = document.getElementById("passportMsg");
+
+  if(!school || !grade || !clazz || !nick){
+    msg.innerHTML = `<span class="danger">⚠️ 四項都必填：學校 / 年級 / 班級 / 暱稱</span>`;
+    return;
+  }
+
+  const p = {school, grade, class: clazz, nickname:nick};
+  p.player_id = playerIdFromProfile(p);
+  setProfile(p);
+  updateProfileTag();
+
+  if(!localStorage.getItem(LS_PROGRESS)){
+    setProgress({ unlocked:1, stars:{}, passed:{} });
+  }
+
+  renderMap();
+  showScreen(screenMap);
+  mapMsg("✅ 護照完成！從第 1 關開始。");
+}, {passive:true});
+
+document.getElementById("btnBackPassport").addEventListener("click", ()=>{
+  showScreen(screenPassport);
+}, {passive:true});
+
+document.getElementById("btnLogout").addEventListener("click", ()=>{
+  if(confirm("確定要清除護照資料與關卡進度？（本機資料會清空）")){
+    clearProfile();
+    localStorage.removeItem(LS_SCORES);
+    updateProfileTag();
+    showScreen(screenPassport);
+  }
+}, {passive:true});
+
+document.getElementById("btnExportLocal").addEventListener("click", exportCSV);
+
+/* ======================================================
+   Map upload test
+====================================================== */
+document.getElementById("btnTestUpload").addEventListener("click", async ()=>{
+  const p = getProfile();
+  if(!p){ uploadTag.textContent = "上傳狀態：尚未登入"; return; }
+  const payload = {
+    timestamp: nowISO(),
+    player_id: p.player_id,
+    school: p.school, grade: p.grade, class: p.class, nickname: p.nickname,
+    level: 0, game_key: "ping",
+    score: 0, metric1: 0, metric2: 0,
+    pass: false, stars: 0,
+    device: deviceLabel(),
+    notes: "ping_test"
+  };
+  const ok = await uploadAttempt(payload);
+  mapMsg(ok ? "✅ 測試上傳已送出（到試算表 attempts 會看到 ping_test）。" : "⚠️ 測試上傳失敗，請確認 WEB_APP_URL 或部署權限。");
+}, {passive:true});
+
+/* ======================================================
+   Buttons Start/Reset
+====================================================== */
+btnReset.addEventListener("click", ()=>{
+  const lv = LEVELS.find(x=>x.level===currentLevel);
+  selectGame(lv);
+}, {passive:true});
+btnStart.addEventListener("click", ()=>{
+  window.dispatchEvent(new CustomEvent("GAME_START"));
+}, {passive:true});
+
+/* ======================================================
+   Global input: AB start, B reset
+====================================================== */
+window.addEventListener("VIRTUAL_INPUT", (ev)=>{
+  const a = ev.detail?.action;
+  if (a === "AB") { window.dispatchEvent(new CustomEvent("GAME_START")); return; }
+  if (a === "B")  { btnReset?.click(); return; }
+});
+
+/* ======================================================
+   When a game finishes -> call onLevelComplete(result)
+====================================================== */
+async function onLevelComplete(result){
+  const p = getProfile();
+  const pg = getProgress();
+
+  const payload = {
+    timestamp: nowISO(),
+    player_id: p.player_id,
+    school: p.school, grade: p.grade, class: p.class, nickname: p.nickname,
+    level: currentLevel,
+    game_key: currentGameKey,
+    score: result.score,
+    metric1: result.metric1,
+    metric2: result.metric2,
+    pass: result.pass,
+    stars: result.stars,
+    device: deviceLabel(),
+    notes: result.notes || ""
+  };
+  saveLocalScore(payload);
+
+  if(result.pass){
+    pg.passed[currentLevel] = true;
+    pg.stars[currentLevel] = Math.max(Number(pg.stars[currentLevel]||0), result.stars||1);
+    if(pg.unlocked === currentLevel && currentLevel < 6) pg.unlocked = currentLevel + 1;
+    setProgress(pg);
+  }
+
+  uploadTag.textContent = "上傳狀態：送出中…";
+  const ok = await uploadAttempt(payload);
+
+  renderKPIs({kpi1:result.kpi1, kpi2:result.kpi2});
+  if(result.pass){
+    toast(`✅ 通關！獲得 ${result.stars} 星。${ok ? "（已送出上傳）" : "（上傳可能失敗，可稍後再試）"}`);
+  }else{
+    toast(`❌ 未通關，請重試。${ok ? "（仍已送出紀錄）" : "（上傳可能失敗，可稍後再試）"}`);
+  }
+}
+
+/* ======================================================
+   6 Games
+====================================================== */
+
+function initReaction(){
+  let state = "idle";
+  let tStart = 0;
+  let timer = null;
+  const trials = 5;
+  let done = 0;
+  let results = [];
+  let lastA = 0;
+  const aGap = 140;
+
+  const box = document.createElement("div");
+  box.className = "rt-box wait";
+  box.innerHTML = `<div style="text-align:center;padding:10px">
+    <div class="big">反應力挑戰</div>
+    <div class="hint">按「開始」後，等待變藍再立刻反應（點擊/空白鍵/micro:bit A）。共 5 次。</div>
+    <div class="sep"></div>
+    <div id="rtMsg" class="big">按開始</div>
+    <div class="hint" id="rtSub"></div>
+    <div class="rt-tap">平板：直接點這裡也可反應</div>
+  </div>`;
+  stageEl.appendChild(box);
+
+  const msg = box.querySelector("#rtMsg");
+  const sub = box.querySelector("#rtSub");
+
+  function setBox(cls, m, s=""){
+    box.className = "rt-box " + cls;
+    msg.textContent = m;
+    sub.textContent = s;
+  }
+  function nextTrial(){
+    state = "waiting";
+    const delay = 900 + Math.random()*1500;
+    setBox("wait", "等待…", `第 ${done+1} / ${trials} 次`);
+    clearTimeout(timer);
+    timer = setTimeout(()=>{
+      state = "go";
+      tStart = performance.now();
+      setBox("go", "現在！點一下 / 空白鍵 / A");
+    }, delay);
+  }
+  function record(ms){
+    results.push(ms);
+    done++;
+    setBox("ready", `✅ ${Math.round(ms)} ms`, `第 ${done} / ${trials} 次`);
+    renderKPIs({kpi1:`${Math.round(ms)} ms`, kpi2:`第 ${done}/${trials}`});
+    setTimeout(()=>{
+      if(done < trials) nextTrial();
+      else finish();
+    }, 650);
+  }
+  async function finish(){
+    state = "done";
+    const avg = results.reduce((s,x)=>s+x,0)/results.length;
+    setBox("ready", `完成！平均 ${Math.round(avg)} ms`, `點「重設」可再測`);
+
+    const score = Math.round(100000/avg);
+    const evalr = evaluatePass(1, "reaction", score, avg, trials);
+
+    await onLevelComplete({
+      score,
+      metric1: avg,
+      metric2: trials,
+      pass: evalr.pass,
+      stars: evalr.stars,
+      notes: evalr.notes,
+      kpi1: `平均 ${Math.round(avg)} ms`,
+      kpi2: `共 ${trials} 次`
+    });
+  }
+  function react(){
+    if(currentGameKey!=="reaction") return;
+    if(state==="go"){
+      const ms = performance.now() - tStart;
+      record(ms);
+    }else if(state==="waiting"){
+      clearTimeout(timer);
+      setBox("wait", "❌ 太早了！", "重新等待…");
+      setTimeout(nextTrial, 650);
+    }
+  }
+  box.addEventListener("click", react, {passive:true});
+  const onKey = (e)=>{
+    const isSpace = (e.code==="Space" || e.key===" " || e.key==="Spacebar");
+    if(!isSpace) return;
+    if(currentGameKey!=="reaction") return;
+    e.preventDefault();
+    react();
+  };
+  window.addEventListener("keydown", onKey, {passive:false});
+  const onVirtual = (ev)=>{
+    if(currentGameKey!=="reaction") return;
+    const a = ev.detail?.action;
+    if(a==="A"){
+      const t = performance.now();
+      if(t - lastA < aGap) return;
+      lastA = t;
+      react();
+    }
+  };
+  window.addEventListener("VIRTUAL_INPUT", onVirtual);
+
+  const onStart = ()=>{
+    results=[]; done=0; state="idle";
+    setBox("wait","準備中…","");
+    setTimeout(nextTrial, 300);
+    renderKPIs({kpi1:"計時中…", kpi2:`第 1/${trials}`});
+  };
+  window.addEventListener("GAME_START", onStart);
+
+  return ()=>{ clearTimeout(timer); window.removeEventListener("keydown", onKey); window.removeEventListener("GAME_START", onStart); window.removeEventListener("VIRTUAL_INPUT", onVirtual); };
+}
+
+function initVisualSearch_CURSOR(){
+  let started=false, t0=0, errors=0;
+  let target = "★";
+  const symbols = ["●","◆","■","▲","♥","♣","♠","★","✿","☀"];
+  const size = 80;
+  const COLS = 10;
+  const ROWS = 8;
+
+  let cx=0, cy=0;
+  let correctIndex = 0;
+
+  const wrap = document.createElement("div");
+  wrap.innerHTML = `
+    <div class="hint">
+      找出目標符號：<span class="big" id="vsTarget">${target}</span>
+      <br/><span class="small">micro:bit：方向 U/D/L/R 移游標、A 選擇</span>
+    </div>
+    <div class="sep"></div>
+    <div class="vs-grid" id="vsGrid"></div>
+  `;
+  stageEl.appendChild(wrap);
+  const grid = wrap.querySelector("#vsGrid");
+  const targetEl = wrap.querySelector("#vsTarget");
+
+  function applyCursor(){
+    const cells = grid.querySelectorAll(".vs-cell");
+    cells.forEach(el=>el.classList.remove("cursor"));
+    const idx = cy*COLS + cx;
+    if(cells[idx]) cells[idx].classList.add("cursor");
+  }
+  function moveCursor(dx,dy){
+    cx = (cx + dx + COLS) % COLS;
+    cy = (cy + dy + ROWS) % ROWS;
+    applyCursor();
+  }
+  function clickAtCursor(){
+    if(!started) return;
+    const idx = cy*COLS + cx;
+    const cells = grid.querySelectorAll(".vs-cell");
+    const el = cells[idx];
+    if(!el) return;
+    el.dispatchEvent(new MouseEvent("click", {bubbles:true, cancelable:true, view:window}));
+  }
+  function randFrom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+  function build(){
+    grid.innerHTML = "";
+    errors=0;
+
+    target = randFrom(symbols);
+    targetEl.textContent = target;
+
+    const pool = symbols.filter(s => s !== target);
+    correctIndex = Math.floor(Math.random()*size);
+
+    for(let i=0;i<size;i++){
+      const cell = document.createElement("div");
+      cell.className = "vs-cell";
+      const sym = (i===correctIndex) ? target : randFrom(pool);
+      cell.textContent = sym;
+
+      cell.addEventListener("click", async ()=>{
+        if(!started) return;
+        if(i===correctIndex){
+          started=false;
+          const ms = performance.now() - t0;
+          cell.classList.add("good");
+
+          const score = Math.max(1, Math.round(10000/(ms/1000 + errors*0.8)));
+          const evalr = evaluatePass(2, "visual", score, ms, errors);
+
+          await onLevelComplete({
+            score,
+            metric1: ms,
+            metric2: errors,
+            pass: evalr.pass,
+            stars: evalr.stars,
+            notes: evalr.notes,
+            kpi1: `${(ms/1000).toFixed(2)} s`,
+            kpi2: `錯誤 ${errors}`
+          });
+        }else{
+          errors++;
+          cell.classList.add("bad");
+          setTimeout(()=>cell.classList.remove("bad"), 220);
+          renderKPIs({kpi1:"進行中", kpi2:`錯誤 ${errors}`});
+        }
+      }, {passive:true});
+
+      grid.appendChild(cell);
+    }
+
+    cx=0; cy=0;
+    applyCursor();
+  }
+
+  const onStart = ()=>{
+    build();
+    started=true;
+    t0 = performance.now();
+    renderKPIs({kpi1:"計時中…", kpi2:"錯誤 0"});
+  };
+  window.addEventListener("GAME_START", onStart);
+
+  const onVirtual = (ev)=>{
+    if(currentGameKey!=="visual") return;
+    const a = ev.detail?.action;
+    if(a==="U" || a==="up") moveCursor(0,-1);
+    if(a==="D" || a==="down") moveCursor(0, 1);
+    if(a==="L" || a==="left") moveCursor(-1,0);
+    if(a==="R" || a==="right") moveCursor( 1,0);
+    if(a==="A") clickAtCursor();
+  };
+  window.addEventListener("VIRTUAL_INPUT", onVirtual);
+
+  const onKey = (e)=>{
+    if(currentGameKey!=="visual") return;
+    if(e.key==="ArrowUp"){ e.preventDefault(); moveCursor(0,-1); }
+    if(e.key==="ArrowDown"){ e.preventDefault(); moveCursor(0,1); }
+    if(e.key==="ArrowLeft"){ e.preventDefault(); moveCursor(-1,0); }
+    if(e.key==="ArrowRight"){ e.preventDefault(); moveCursor(1,0); }
+    if(e.key==="Enter"){ e.preventDefault(); clickAtCursor(); }
+  };
+  window.addEventListener("keydown", onKey, {passive:false});
+
+  build();
+  return ()=>{ window.removeEventListener("GAME_START", onStart); window.removeEventListener("VIRTUAL_INPUT", onVirtual); window.removeEventListener("keydown", onKey); };
+}
+
+function initMemoryMatch_CURSOR(){
+  const icons = ["🐶","🐱","🐼","🦊","🐸","🐵","🐯","🦁","🐰","🐷","🐨","🐻","🐹","🐮","🐔","🐙"];
+  let deck=[], revealed=[], matched=0, flips=0, t0=0, running=false;
+  let cx=0, cy=0;
+
+  const wrap = document.createElement("div");
+  wrap.innerHTML = `
+    <div class="hint">翻牌配對（8 對）。方向/ micro:bit UDLR 移游標，A 翻牌。</div>
+    <div class="sep"></div>
+    <div class="mm-grid" id="mmGrid"></div>
+  `;
+  stageEl.appendChild(wrap);
+  const grid = wrap.querySelector("#mmGrid");
+
+  function shuffle(a){
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
+  }
+  function cursorIndex(){ return cy*4 + cx; }
+  function applyCursor(){
+    const cards = grid.querySelectorAll(".mm-card");
+    cards.forEach(el=>el.classList.remove("cursor"));
+    const idx = cursorIndex();
+    if(cards[idx]) cards[idx].classList.add("cursor");
+  }
+
+  function build(){
+    grid.innerHTML = "";
+    revealed=[]; matched=0; flips=0; running=false;
+
+    const pick = shuffle([...icons]).slice(0,8);
+    deck = shuffle([...pick, ...pick]).map((sym, idx)=>({sym, idx, state:"hidden"}));
+
+    for(let i=0;i<deck.length;i++){
+      const card = deck[i];
+      const el = document.createElement("div");
+      el.className = "mm-card";
+      el.textContent = "？";
+      el.addEventListener("click", async ()=>{
+        if(!running) return;
+        if(card.state!=="hidden") return;
+        if(revealed.length===2) return;
+
+        card.state="revealed";
+        el.classList.add("revealed");
+        el.textContent = card.sym;
+        revealed.push({card, el});
+        flips++;
+        renderKPIs({kpi1:"進行中", kpi2:`翻牌 ${flips}`});
+
+        if(revealed.length===2){
+          const [a,b] = revealed;
+          if(a.card.sym===b.card.sym){
+            a.card.state=b.card.state="matched";
+            a.el.classList.remove("revealed"); b.el.classList.remove("revealed");
+            a.el.classList.add("matched"); b.el.classList.add("matched");
+            revealed=[];
+            matched+=2;
+            if(matched===deck.length){
+              running=false;
+              const ms = performance.now() - t0;
+              const score = Math.max(1, Math.round(12000/(ms/1000 + (flips-16)*0.35)));
+              const evalr = evaluatePass(3, "memory", score, ms, flips);
+              await onLevelComplete({
+                score,
+                metric1: ms,
+                metric2: flips,
+                pass: evalr.pass,
+                stars: evalr.stars,
+                notes: evalr.notes,
+                kpi1: `${(ms/1000).toFixed(2)} s`,
+                kpi2: `翻牌 ${flips}`
+              });
+            }
+          }else{
+            setTimeout(()=>{
+              a.card.state=b.card.state="hidden";
+              a.el.classList.remove("revealed"); b.el.classList.remove("revealed");
+              a.el.textContent="？"; b.el.textContent="？";
+              revealed=[];
+              applyCursor();
+            }, 560);
+          }
+        }
+        applyCursor();
+      }, {passive:true});
+
+      grid.appendChild(el);
+      card.el = el;
+    }
+
+    cx=0; cy=0;
+    applyCursor();
+  }
+
+  function flipAtCursor(){
+    if(!running) return;
+    const idx = cursorIndex();
+    const card = deck[idx];
+    if(!card || !card.el) return;
+    if(card.state!=="hidden") return;
+    card.el.dispatchEvent(new MouseEvent("click", {bubbles:true, cancelable:true, view:window}));
+  }
+  function moveCursor(dx,dy){
+    cx = (cx + dx + 4) % 4;
+    cy = (cy + dy + 4) % 4;
+    applyCursor();
+  }
+
+  const onVirtual = (ev)=>{
+    if(currentGameKey!=="memory") return;
+    const a = ev.detail?.action;
+    if(a==="A"){ flipAtCursor(); }
+    if(a==="U" || a==="up") moveCursor(0,-1);
+    if(a==="D" || a==="down") moveCursor(0, 1);
+    if(a==="L" || a==="left") moveCursor(-1,0);
+    if(a==="R" || a==="right") moveCursor( 1,0);
+  };
+  window.addEventListener("VIRTUAL_INPUT", onVirtual);
+
+  const onKey = (e)=>{
+    if(currentGameKey!=="memory") return;
+    if(e.key==="ArrowUp"){ e.preventDefault(); moveCursor(0,-1); }
+    if(e.key==="ArrowDown"){ e.preventDefault(); moveCursor(0,1); }
+    if(e.key==="ArrowLeft"){ e.preventDefault(); moveCursor(-1,0); }
+    if(e.key==="ArrowRight"){ e.preventDefault(); moveCursor(1,0); }
+    if(e.key==="Enter"){ e.preventDefault(); flipAtCursor(); }
+  };
+  window.addEventListener("keydown", onKey, {passive:false});
+
+  const onStart = ()=>{
+    build();
+    running=true;
+    t0 = performance.now();
+    renderKPIs({kpi1:"計時中…", kpi2:"翻牌 0"});
+    applyCursor();
+  };
+  window.addEventListener("GAME_START", onStart);
+
+  build();
+  return ()=>{ window.removeEventListener("GAME_START", onStart); window.removeEventListener("VIRTUAL_INPUT", onVirtual); window.removeEventListener("keydown", onKey); };
+}
+
+function initMaze(){
+  const W=6,H=6;
+  let player={x:0,y:0};
+  const start={x:0,y:0};
+  const end={x:5,y:5};
+  let walls=new Set();
+  let path=new Set();
+  let showing=true;
+  let running=false;
+  let t0=0;
+  let wrong=0;
+
+  const wrap = document.createElement("div");
+  wrap.innerHTML = `
+    <div class="hint">先記住綠色路徑（3 秒），提示消失後走到終點。micro:bit：方向 UDLR。</div>
+    <div class="sep"></div>
+    <div class="maze-wrap">
+      <div class="maze-grid" id="mzGrid"></div>
+      <div style="min-width:240px">
+        <div class="card" style="background:rgba(255,255,255,.9)">
+          <div class="hint" id="mzInfo">按「開始」生成路徑</div>
+          <div class="sep"></div>
+          <button class="secondary" id="mzShow">再看一次路徑（展示用）</button>
+        </div>
+      </div>
+    </div>
+  `;
+  stageEl.appendChild(wrap);
+  const grid = wrap.querySelector("#mzGrid");
+  const info = wrap.querySelector("#mzInfo");
+  const btnShow = wrap.querySelector("#mzShow");
+
+  function idx(x,y){ return `${x},${y}`; }
+  function inb(x,y){ return x>=0&&x<W&&y>=0&&y<H; }
+  function shuffle(a){
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
+  }
+
+  function buildWalls(){
+    walls.clear();
+    const candidates = [];
+    for(let y=0;y<H;y++){
+      for(let x=0;x<W;x++){
+        if((x===0&&y===0)||(x===5&&y===5)) continue;
+        if(Math.abs(x-y)<=1) continue;
+        candidates.push({x,y});
+      }
+    }
+    shuffle(candidates);
+    for(let i=0;i<8;i++) walls.add(idx(candidates[i].x,candidates[i].y));
+  }
+
+  function genPath(){
+    path.clear();
+    let x=0,y=0;
+    path.add(idx(x,y));
+    const maxSteps=30;
+    for(let step=0; step<maxSteps && !(x===end.x && y===end.y); step++){
+      const moves = shuffle([
+        {x:x+1,y},{x:x-1,y},
+        {x,y:y+1},{x,y:y-1}
+      ]).filter(p=>inb(p.x,p.y) && !walls.has(idx(p.x,p.y)));
+
+      moves.sort((a,b)=>{
+        const da = Math.abs(end.x-a.x)+Math.abs(end.y-a.y);
+        const db = Math.abs(end.x-b.x)+Math.abs(end.y-b.y);
+        return da-db;
+      });
+      if(!moves.length) break;
+      const pick = moves[Math.random()<0.7 ? 0 : Math.min(1,moves.length-1)];
+      x=pick.x; y=pick.y;
+      path.add(idx(x,y));
+    }
+    while(!(x===end.x && y===end.y)){
+      const dx = end.x>x ? 1 : (end.x<x ? -1 : 0);
+      const dy = end.y>y ? 1 : (end.y<y ? -1 : 0);
+      let nx=x+dx, ny=y;
+      if(dx!==0 && inb(nx,ny) && !walls.has(idx(nx,ny))){
+        x=nx;
+      }else{
+        nx=x; ny=y+dy;
+        if(dy!==0 && inb(nx,ny) && !walls.has(idx(nx,ny))){
+          y=ny;
+        }else{
+          const alt = [
+            {x:x+1,y},{x:x-1,y},{x,y:y+1},{x,y:y-1}
+          ].filter(p=>inb(p.x,p.y) && !walls.has(idx(p.x,p.y)));
+          if(!alt.length) break;
+          const p = alt[Math.floor(Math.random()*alt.length)];
+          x=p.x; y=p.y;
+        }
+      }
+      path.add(idx(x,y));
+    }
+  }
+
+  function draw(){
+    grid.innerHTML="";
+    for(let y=0;y<H;y++){
+      for(let x=0;x<W;x++){
+        const el = document.createElement("div");
+        el.className="mz";
+        const key = idx(x,y);
+        if(walls.has(key)) el.classList.add("wall");
+        if(x===start.x && y===start.y) el.classList.add("start");
+        if(x===end.x && y===end.y) el.classList.add("end");
+        if(x===player.x && y===player.y) el.classList.add("player");
+        if(showing && path.has(key) && !walls.has(key)) el.classList.add("pathhint");
+        el.textContent = (x===end.x && y===end.y) ? "★" : "";
+        grid.appendChild(el);
+      }
+    }
+  }
+
+  function startRound(){
+    buildWalls(); genPath();
+    player={...start};
+    wrong=0;
+    showing=true; running=false;
+    info.textContent = "記路徑中（3 秒）…";
+    draw();
+    setTimeout(()=>{
+      showing=false;
+      running=true;
+      t0=performance.now();
+      info.textContent = "開始！走到終點。";
+      renderKPIs({kpi1:"計時中…", kpi2:"走錯 0"});
+      draw();
+    }, 3000);
+  }
+
+  async function finish(){
+    running=false;
+    const ms=performance.now()-t0;
+    const score = Math.max(1, Math.round(14000/(ms/1000 + wrong*1.2)));
+    const evalr = evaluatePass(4, "maze", score, ms, wrong);
+    await onLevelComplete({
+      score,
+      metric1: ms,
+      metric2: wrong,
+      pass: evalr.pass,
+      stars: evalr.stars,
+      notes: evalr.notes,
+      kpi1: `${(ms/1000).toFixed(2)} s`,
+      kpi2: `走錯 ${wrong}`
+    });
+    info.textContent = "完成！點「重設」可再玩。";
+  }
+
+  function move(dx,dy){
+    if(!running) return;
+    const nx=player.x+dx, ny=player.y+dy;
+    if(nx<0||nx>=W||ny<0||ny>=H) return;
+    if(walls.has(idx(nx,ny))) return;
+    player.x=nx; player.y=ny;
+
+    const key = idx(nx,ny);
+    if(!path.has(key) && !(nx===start.x&&ny===start.y) && !(nx===end.x&&ny===end.y)){
+      wrong++;
+    }
+
+    if(nx===end.x && ny===end.y){
+      finish();
+    }else{
+      renderKPIs({kpi1:"進行中", kpi2:`走錯 ${wrong}`});
+    }
+    draw();
+  }
+
+  const onKey = (e)=>{
+    if(currentGameKey!=="maze") return;
+    if(e.key==="ArrowUp") { e.preventDefault(); move(0,-1); }
+    if(e.key==="ArrowDown"){ e.preventDefault(); move(0,1); }
+    if(e.key==="ArrowLeft"){ e.preventDefault(); move(-1,0); }
+    if(e.key==="ArrowRight"){ e.preventDefault(); move(1,0); }
+  };
+  window.addEventListener("keydown", onKey, {passive:false});
+
+  const onVirtual = (ev)=>{
+    if(currentGameKey!=="maze") return;
+    const a = ev.detail?.action;
+    if(a==="up" || a==="U") move(0,-1);
+    if(a==="down"|| a==="D") move(0,1);
+    if(a==="left"|| a==="L") move(-1,0);
+    if(a==="right"||a==="R") move(1,0);
+  };
+  window.addEventListener("VIRTUAL_INPUT", onVirtual);
+
+  btnShow.addEventListener("click", ()=>{
+    if(!path.size) return;
+    showing=true; draw();
+    setTimeout(()=>{ showing=false; draw(); }, 2000);
+  }, {passive:true});
+
+  const onStart = ()=>startRound();
+  window.addEventListener("GAME_START", onStart);
+
+  buildWalls(); genPath(); draw();
+  return ()=>{ window.removeEventListener("keydown", onKey); window.removeEventListener("GAME_START", onStart); window.removeEventListener("VIRTUAL_INPUT", onVirtual); };
+}
+
+function initGoNoGo(){
+  let running=false;
+  let timer=null;
+  const trials=20;
+  let i=0, hits=0, misses=0, falseAlarms=0, correctReject=0;
+  let current=null;
+  let waitingForResponse=false;
+
+  const wrap = document.createElement("div");
+  wrap.innerHTML = `
+    <div class="hint">看到 <b style="color:var(--good)">GO</b> → 按空白鍵/micro:bit A/點一下；看到 <b style="color:var(--bad)">STOP</b> → 不要按。共 20 題。</div>
+    <div class="sep"></div>
+    <div class="gng-box">
+      <div class="gng-signal" id="gngSignal">按開始</div>
+      <div class="hint" id="gngSub" style="margin-top:10px;text-align:center"></div>
+    </div>
+  `;
+  stageEl.appendChild(wrap);
+  const sig = wrap.querySelector("#gngSignal");
+  const sub = wrap.querySelector("#gngSub");
+
+  function showNext(){
+    if(i>=trials){ finish(); return; }
+    waitingForResponse=true;
+    current = (Math.random()<0.7) ? "GO" : "STOP";
+    sig.textContent = current;
+    sig.style.borderColor = current==="GO" ? "rgba(0,184,148,.85)" : "rgba(255,59,107,.85)";
+    sub.textContent = `第 ${i+1}/${trials}`;
+
+    clearTimeout(timer);
+    timer = setTimeout(()=>{
+      if(!waitingForResponse) return;
+      waitingForResponse=false;
+      if(current==="GO") misses++;
+      else correctReject++;
+      i++;
+      renderKPIs({kpi1:"進行中", kpi2:`命中 ${hits} / 誤按 ${falseAlarms}`});
+      setTimeout(showNext, 200);
+    }, 800);
+  }
+  function press(){
+    if(!running) return;
+    if(!waitingForResponse) return;
+    waitingForResponse=false;
+    if(current==="GO") hits++;
+    else falseAlarms++;
+    i++;
+    renderKPIs({kpi1:"進行中", kpi2:`命中 ${hits} / 誤按 ${falseAlarms}`});
+    setTimeout(showNext, 200);
+  }
+
+  async function finish(){
+    running=false;
+    clearTimeout(timer);
+    const acc = (hits + correctReject) / trials * 100;
+    sig.textContent = `完成！正確率 ${acc.toFixed(1)}%`;
+    sub.textContent = `GO命中 ${hits}｜GO漏按 ${misses}｜STOP誤按 ${falseAlarms}`;
+
+    const score = Math.round(acc*10 - falseAlarms*5);
+    const evalr = evaluatePass(5, "gng", score, acc, falseAlarms);
+
+    await onLevelComplete({
+      score,
+      metric1: acc,
+      metric2: falseAlarms,
+      pass: evalr.pass,
+      stars: evalr.stars,
+      notes: evalr.notes,
+      kpi1: `${acc.toFixed(1)} %`,
+      kpi2: `誤按 ${falseAlarms}`
+    });
+  }
+
+  const onKey = (e)=>{
+    const isSpace = (e.code==="Space" || e.key===" " || e.key==="Spacebar");
+    if(!isSpace) return;
+    if(currentGameKey!=="gng") return;
+    e.preventDefault();
+    press();
+  };
+  window.addEventListener("keydown", onKey, {passive:false});
+
+  const onVirtual = (ev)=>{
+    if(currentGameKey!=="gng") return;
+    const a = ev.detail?.action;
+    if(a==="A") press();
+  };
+  window.addEventListener("VIRTUAL_INPUT", onVirtual);
+
+  sig.addEventListener("click", press, {passive:true});
+
+  const onStart = ()=>{
+    hits=0;misses=0;falseAlarms=0;correctReject=0;i=0;
+    running=true;
+    renderKPIs({kpi1:"進行中", kpi2:"命中 0 / 誤按 0"});
+    showNext();
+  };
+  window.addEventListener("GAME_START", onStart);
+
+  return ()=>{ window.removeEventListener("keydown", onKey); window.removeEventListener("GAME_START", onStart); window.removeEventListener("VIRTUAL_INPUT", onVirtual); clearTimeout(timer); };
+}
+
+/* ======================================================
+   ✅ 第6關：迷你數獨（改成：錯誤停留超過3秒才算錯）
+====================================================== */
+function initSudoku4_CURSOR(){
+  const puzzle = {
+    grid:[[1,0,0,4],[0,0,1,0],[0,3,0,0],[2,0,0,3]],
+    solution:[[1,2,3,4],[3,4,1,2],[4,3,2,1],[2,1,4,3]]
+  };
+
+  let board = puzzle.grid.map(r=>r.slice());
+  const fixed = puzzle.grid.map(r=>r.map(v=>v!==0));
+  const sol = puzzle.solution;
+
+  let running=false, t0=0, errors=0;
+  let cx=0, cy=0;
+
+  // ⭐ 3秒錯誤判斷用：每格一個 pending timer
+  // key -> { timerId, valueAtStart, counted }
+  const pending = new Map();
+
+  const wrap = document.createElement("div");
+  wrap.innerHTML = `
+    <div class="hint">方向移游標（U/D/L/R），A 在該格循環填 1→2→3→4→空。<br/>
+    <span class="small">規則：填錯不會立刻算錯，錯誤數字「停留超過 3 秒」才算錯（黃框=等待中）。</span></div>
+    <div class="sep"></div>
+    <div class="sd-wrap">
+      <div class="sd-grid" id="sdGrid"></div>
+      <div class="hint" style="text-align:center">按「開始」後計時。</div>
+    </div>
+  `;
+  stageEl.appendChild(wrap);
+  const grid = wrap.querySelector("#sdGrid");
+
+  function cellKey(x,y){ return `${x},${y}`; }
+  function cursorIndex(){ return cy*4 + cx; }
+
+  function clearPendingFor(x,y){
+    const k = cellKey(x,y);
+    const obj = pending.get(k);
+    if(obj && obj.timerId){
+      clearTimeout(obj.timerId);
+    }
+    pending.delete(k);
+  }
+
+  function clearAllPending(){
+    for(const [k,obj] of pending.entries()){
+      if(obj && obj.timerId) clearTimeout(obj.timerId);
+    }
+    pending.clear();
+  }
+
+  function applyCursor(){
+    const cells = grid.querySelectorAll(".sd-cell");
+    cells.forEach(el=>el.classList.remove("cursor"));
+    const idx = cursorIndex();
+    if(cells[idx]) cells[idx].classList.add("cursor");
+  }
+
+  function draw(){
+    grid.innerHTML="";
+    for(let y=0;y<4;y++){
+      for(let x=0;x<4;x++){
+        const el = document.createElement("div");
+        el.className="sd-cell";
+        if(fixed[y][x]) el.classList.add("fixed");
+
+        const v = board[y][x];
+        el.textContent = v===0 ? "" : v;
+
+        // 依照 pending 狀態顯示黃框
+        const k = cellKey(x,y);
+        if(pending.has(k)) el.classList.add("pending");
+
+        el.addEventListener("click", async ()=>{
+          if(!running) return;
+          if(fixed[y][x]) return;
+
+          // 每次改值：先取消原本 pending 計時（因為狀態改變了）
+          clearPendingFor(x,y);
+
+          board[y][x] = (board[y][x] + 1) % 5;
+
+          const newVal = board[y][x];
+          const correct = sol[y][x];
+
+          // 若填入非0且錯誤：啟動3秒計時（黃框）
+          if(newVal !== 0 && newVal !== correct){
+            // 標記 pending（尚未計錯）
+            const timerId = setTimeout(()=>{
+              // 3秒後再檢查：若仍是同一個錯誤值 → 才算錯
+              if(!running) return;
+              if(board[y][x] === newVal && board[y][x] !== 0 && board[y][x] !== correct){
+                errors++;
+                // flash red outline
+                const cells = grid.querySelectorAll(".sd-cell");
+                const idx = y*4 + x;
+                const cel = cells[idx];
+                if(cel){
+                  cel.classList.remove("pending");
+                  cel.classList.add("bad");
+                  setTimeout(()=>cel.classList.remove("bad"), 260);
+                }
+                // 計過錯後，把 pending 清掉（避免同一格同一值一直加錯）
+                pending.delete(k);
+                renderKPIs({kpi1:"進行中", kpi2:`錯誤 ${errors}`});
+              }else{
+                // 已改正/清空，取消 pending
+                pending.delete(k);
+              }
+              draw();
+            }, 3000);
+
+            pending.set(k, {timerId, valueAtStart:newVal});
+          }
+
+          draw();
+          renderKPIs({kpi1:"進行中", kpi2:`錯誤 ${errors}`});
+
+          if(checkComplete()) await finish();
+        }, {passive:true});
+
+        grid.appendChild(el);
+      }
+    }
+    applyCursor();
+  }
+
+  function findNearestEditable(){
+    for(let k=0;k<16;k++){
+      const x = (cx + k) % 4;
+      const y = cy;
+      if(!fixed[y][x]){ cx=x; return; }
+    }
+    for(let y=0;y<4;y++){
+      for(let x=0;x<4;x++){
+        if(!fixed[y][x]){ cx=x; cy=y; return; }
+      }
+    }
+  }
+
+  function clickAtCursor(){
+    if(!running) return;
+    const idx = cursorIndex();
+    const cells = grid.querySelectorAll(".sd-cell");
+    const el = cells[idx];
+    if(!el) return;
+    if(el.classList.contains("fixed")) return;
+    el.dispatchEvent(new MouseEvent("click", {bubbles:true, cancelable:true, view:window}));
+  }
+
+  function moveCursor(dx,dy){
+    cx = (cx + dx + 4) % 4;
+    cy = (cy + dy + 4) % 4;
+    if(fixed[cy][cx]) findNearestEditable();
+    applyCursor();
+  }
+
+  function checkComplete(){
+    for(let y=0;y<4;y++){
+      for(let x=0;x<4;x++){
+        if(board[y][x]!==sol[y][x]) return false;
+      }
+    }
+    return true;
+  }
+
+  async function finish(){
+    running=false;
+    clearAllPending(); // 結束時關掉所有計時器
+    const ms = performance.now()-t0;
+    const score = Math.max(1, Math.round(16000/(ms/1000 + errors*0.8)));
+    const evalr = evaluatePass(6, "sudoku", score, ms, errors);
+
+    await onLevelComplete({
+      score,
+      metric1: ms,
+      metric2: errors,
+      pass: evalr.pass,
+      stars: evalr.stars,
+      notes: evalr.notes,
+      kpi1: `${(ms/1000).toFixed(2)} s`,
+      kpi2: `錯誤 ${errors}`
+    });
+  }
+
+  const onVirtual = (ev)=>{
+    if(currentGameKey!=="sudoku") return;
+    const a = ev.detail?.action;
+    if(a==="A"){ clickAtCursor(); }
+    if(a==="U" || a==="up") moveCursor(0,-1);
+    if(a==="D" || a==="down") moveCursor(0, 1);
+    if(a==="L" || a==="left") moveCursor(-1,0);
+    if(a==="R" || a==="right") moveCursor( 1,0);
+  };
+  window.addEventListener("VIRTUAL_INPUT", onVirtual);
+
+  const onKey = (e)=>{
+    if(currentGameKey!=="sudoku") return;
+    if(e.key==="ArrowUp"){ e.preventDefault(); moveCursor(0,-1); }
+    if(e.key==="ArrowDown"){ e.preventDefault(); moveCursor(0,1); }
+    if(e.key==="ArrowLeft"){ e.preventDefault(); moveCursor(-1,0); }
+    if(e.key==="ArrowRight"){ e.preventDefault(); moveCursor(1,0); }
+    if(e.key==="Enter"){ e.preventDefault(); clickAtCursor(); }
+  };
+  window.addEventListener("keydown", onKey, {passive:false});
+
+  const onStart = ()=>{
+    board = puzzle.grid.map(r=>r.slice());
+    errors=0;
+    clearAllPending();
+    running=true;
+    t0=performance.now();
+    renderKPIs({kpi1:"計時中…", kpi2:"錯誤 0"});
+    cx=0; cy=0;
+    if(fixed[cy][cx]) findNearestEditable();
+    draw();
+  };
+  window.addEventListener("GAME_START", onStart);
+
+  cx=0; cy=0;
+  if(fixed[cy][cx]) findNearestEditable();
+  draw();
+
+  return ()=>{
+    clearAllPending();
+    window.removeEventListener("GAME_START", onStart);
+    window.removeEventListener("VIRTUAL_INPUT", onVirtual);
+    window.removeEventListener("keydown", onKey);
+  };
+}
+
+/* ======================================================
+   App init
+====================================================== */
+function boot(){
+  const p = getProfile();
+  updateProfileTag();
+
+  if(!p){
+    showScreen(screenPassport);
+  }else{
+    renderMap();
+    showScreen(screenMap);
+  }
+}
+boot();
+
+(function preloadPassport(){
+  const p = getProfile();
+  if(!p) return;
+  document.getElementById("inSchool").value = p.school || "";
+  document.getElementById("inGrade").value = p.grade || "";
+  document.getElementById("inClass").value = p.class || "";
+  document.getElementById("inNick").value = p.nickname || "";
+})();
+
+/* ======================================================
+   Map & game glue (renderMap depends on below)
+====================================================== */
+function evaluatePass(level, gameKey, score, metric1, metric2){
+  // overwritten above already – kept for safety in copy/paste
+  return window.__dummyEvalPass ? window.__dummyEvalPass(level, gameKey, score, metric1, metric2) : (function(){
+    let pass=false, stars=1, notes="";
+    if(level===1){ const avg=metric1; pass=avg<=450; stars=avg<=300?3:(avg<=350?2:(pass?1:0)); notes="avg_ms"; }
+    if(level===2){ const ms=metric1, e=metric2; pass=(ms<=8000)&&(e<=2); stars=(ms<=4500&&e===0)?3:(ms<=6000&&e<=1?2:(pass?1:0)); notes="visual_unique_target"; }
+    if(level===3){ const ms=metric1; pass=ms<=70000; stars=ms<=45000?3:(ms<=60000?2:(pass?1:0)); notes="memory_match"; }
+    if(level===4){ const ms=metric1, w=metric2; pass=(ms<=45000)&&(w<=2); stars=(ms<=28000&&w===0)?3:(ms<=36000&&w<=1?2:(pass?1:0)); notes="path_memory_maze"; }
+    if(level===5){ const acc=metric1; pass=acc>=85; stars=acc>=95?3:(acc>=90?2:(pass?1:0)); notes="go_no_go"; }
+    if(level===6){ const ms=metric1, e=metric2; pass=(ms<=90000)&&(e<=3); stars=(ms<=45000&&e<=1)?3:(ms<=65000&&e<=2?2:(pass?1:0)); notes="mini_sudoku_4x4"; }
+    return {pass, stars, notes};
+  })();
+}
+</script>
+</body>
+</html>
