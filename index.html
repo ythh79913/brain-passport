@@ -1308,7 +1308,10 @@ function initVisualSearch_CURSOR(){
           const ms = performance.now() - t0;
           cell.classList.add("good");
 
-          const score = Math.max(1, Math.round(10000/(ms/1000 + errors*0.8)));
+                    // ✅ 計分調整（更嚴謹，避免進步差距過大）：
+          // 分數約落在 0~1000；時間越短越高、錯誤越多扣分。
+          const sec = ms/1000;
+          const score = Math.max(1, Math.round(1000 * (6/(6+sec)) * (1/(1+errors*0.6))));
           const evalr = evaluatePass(2, "visual", score, ms, errors);
 
           await onLevelComplete({
@@ -1433,7 +1436,11 @@ function initMemoryMatch_CURSOR(){
             if(matched===deck.length){
               running=false;
               const ms = performance.now() - t0;
-              const score = Math.max(1, Math.round(12000/(ms/1000 + (flips-16)*0.35)));
+                            // ✅ 計分調整（第3關較寬鬆，讓進退步幅度更貼近其他關）：
+              // 分數約落在 0~1000；時間越短越高，翻牌超過16次會扣分但較溫和。
+              const sec = ms/1000;
+              const extra = Math.max(0, flips-16);
+              const score = Math.max(1, Math.round(1000 * (60/(60+sec)) * (1/(1+extra*0.25))));
               const evalr = evaluatePass(3, "memory", score, ms, flips);
               await onLevelComplete({
                 score,
@@ -1653,7 +1660,10 @@ function initMaze(){
   async function finish(){
     running=false;
     const ms=performance.now()-t0;
-    const score = Math.max(1, Math.round(14000/(ms/1000 + wrong*1.2)));
+        // ✅ 計分調整（更嚴謹，避免進步差距過大）：
+    // 分數約落在 0~1000；時間越短越高、走錯越多扣分。
+    const sec = ms/1000;
+    const score = Math.max(1, Math.round(1000 * (25/(25+sec)) * (1/(1+wrong*0.8))));
     const evalr = evaluatePass(4, "maze", score, ms, wrong);
     await onLevelComplete({
       score,
@@ -1827,15 +1837,18 @@ function initGoNoGo(){
 ====================================================== */
 
 
+
 function initSudoku4_CURSOR(){
   /* ======================================================
-     ✅ 第6關：迷你數獨（10 種「位置不同」的同難度題目輪替）
-     你要求的「10 種不同形式」= 1~4 的題目給定數字位置與配置不同，
-     但規則不變、操作不變、3 秒錯誤停留判定不變。
+     ✅ 第6關：迷你數獨（進階同等難度 10 題，隨機抽題且 10 題內不重複）
+     - 規則不變、操作不變、3 秒錯誤停留判定不變
+     - 10 題同等難度（已給 8 格）
+     - 每次開始本關：隨機抽一題；在 10 題都出完前不重複；出完自動重新洗牌
   ====================================================== */
 
-  const PUZZLES = [{"name":"第 1/10 題（入門）","rule":"經典 4×4：每列/每行/每個 2×2 宮都要填入 1～4（不重複）。難度：已給 12 格（越少越難）。","grid":[[0,3,1,4],[4,1,3,2],[0,2,4,0],[1,4,0,3]],"solution":[[2,3,1,4],[4,1,3,2],[3,2,4,1],[1,4,2,3]],"givens":12},{"name":"第 2/10 題（入門）","rule":"經典 4×4：每列/每行/每個 2×2 宮都要填入 1～4（不重複）。難度：已給 12 格（越少越難）。","grid":[[4,1,2,0],[2,3,4,1],[0,4,3,0],[3,2,1,0]],"solution":[[4,1,2,3],[2,3,4,1],[1,4,3,2],[3,2,1,4]],"givens":12},{"name":"第 3/10 題（一般）","rule":"經典 4×4：每列/每行/每個 2×2 宮都要填入 1～4（不重複）。難度：已給 11 格（越少越難）。","grid":[[0,4,3,0],[3,0,0,4],[4,0,1,3],[1,3,4,2]],"solution":[[2,4,3,1],[3,1,2,4],[4,2,1,3],[1,3,4,2]],"givens":11},{"name":"第 4/10 題（一般）","rule":"經典 4×4：每列/每行/每個 2×2 宮都要填入 1～4（不重複）。難度：已給 11 格（越少越難）。","grid":[[3,0,0,2],[0,2,3,1],[1,0,2,4],[0,4,1,3]],"solution":[[3,1,4,2],[4,2,3,1],[1,3,2,4],[2,4,1,3]],"givens":11},{"name":"第 5/10 題（一般）","rule":"經典 4×4：每列/每行/每個 2×2 宮都要填入 1～4（不重複）。難度：已給 10 格（越少越難）。","grid":[[4,1,0,0],[3,2,1,4],[2,0,0,0],[1,4,0,2]],"solution":[[4,1,2,3],[3,2,1,4],[2,3,4,1],[1,4,3,2]],"givens":10},{"name":"第 6/10 題（進階）","rule":"經典 4×4：每列/每行/每個 2×2 宮都要填入 1～4（不重複）。難度：已給 10 格（越少越難）。","grid":[[2,0,1,0],[1,4,2,0],[0,2,0,1],[4,1,0,2]],"solution":[[2,3,1,4],[1,4,2,3],[3,2,4,1],[4,1,3,2]],"givens":10},{"name":"第 7/10 題（進階）","rule":"經典 4×4：每列/每行/每個 2×2 宮都要填入 1～4（不重複）。難度：已給 9 格（越少越難）。","grid":[[4,0,2,3],[0,3,4,0],[3,2,1,0],[0,0,3,0]],"solution":[[4,1,2,3],[2,3,4,1],[3,2,1,4],[1,4,3,2]],"givens":9},{"name":"第 8/10 題（進階）","rule":"經典 4×4：每列/每行/每個 2×2 宮都要填入 1～4（不重複）。難度：已給 8 格（越少越難）。","grid":[[3,2,0,0],[0,4,0,0],[0,1,3,2],[2,0,0,4]],"solution":[[3,2,4,1],[1,4,2,3],[4,1,3,2],[2,3,1,4]],"givens":8},{"name":"第 9/10 題（挑戰）","rule":"經典 4×4：每列/每行/每個 2×2 宮都要填入 1～4（不重複）。難度：已給 7 格（越少越難）。","grid":[[1,0,3,0],[0,3,4,0],[4,1,0,3],[0,0,0,0]],"solution":[[1,4,3,2],[2,3,4,1],[4,1,2,3],[3,2,1,4]],"givens":7},{"name":"第 10/10 題（挑戰）","rule":"經典 4×4：每列/每行/每個 2×2 宮都要填入 1～4（不重複）。難度：已給 6 格（越少越難）。","grid":[[4,2,0,0],[0,0,0,0],[0,4,0,1],[0,1,2,0]],"solution":[[4,2,1,3],[1,3,4,2],[2,4,3,1],[3,1,2,4]],"givens":6}];
-  const LS_SUDOKU_PUZZLE_IDX = "nt_sudoku_puzzle_idx_v2";
+  const PUZZLES = [{"name":"進階題 1/10","rule":"經典 4×4：每列/每行/每個 2×2 宮都要填入 1～4（不重複）。難度：已給 8 格（10 題同等難度）。","grid":[[0,3,2,0],[4,0,0,0],[0,0,4,2],[2,0,1,3]],"solution":[[1,3,2,4],[4,2,3,1],[3,1,4,2],[2,4,1,3]]},{"name":"進階題 2/10","rule":"經典 4×4：每列/每行/每個 2×2 宮都要填入 1～4（不重複）。難度：已給 8 格（10 題同等難度）。","grid":[[0,0,0,3],[0,3,2,4],[4,0,0,1],[0,1,0,2]],"solution":[[2,4,1,3],[1,3,2,4],[4,2,3,1],[3,1,4,2]]},{"name":"進階題 3/10","rule":"經典 4×4：每列/每行/每個 2×2 宮都要填入 1～4（不重複）。難度：已給 8 格（10 題同等難度）。","grid":[[0,1,2,0],[0,4,3,1],[1,0,0,0],[4,0,0,3]],"solution":[[3,1,2,4],[2,4,3,1],[1,3,4,2],[4,2,1,3]]},{"name":"進階題 4/10","rule":"經典 4×4：每列/每行/每個 2×2 宮都要填入 1～4（不重複）。難度：已給 8 格（10 題同等難度）。","grid":[[1,0,2,0],[4,2,0,0],[0,0,0,2],[2,4,0,3]],"solution":[[1,3,2,4],[4,2,3,1],[3,1,4,2],[2,4,1,3]]},{"name":"進階題 5/10","rule":"經典 4×4：每列/每行/每個 2×2 宮都要填入 1～4（不重複）。難度：已給 8 格（10 題同等難度）。","grid":[[2,0,0,4],[0,1,3,0],[3,2,4,0],[0,0,2,0]],"solution":[[2,3,1,4],[4,1,3,2],[3,2,4,1],[1,4,2,3]]},{"name":"進階題 6/10","rule":"經典 4×4：每列/每行/每個 2×2 宮都要填入 1～4（不重複）。難度：已給 8 格（10 題同等難度）。","grid":[[1,3,0,0],[0,4,0,0],[0,2,3,1],[3,0,0,2]],"solution":[[1,3,2,4],[2,4,1,3],[4,2,3,1],[3,1,4,2]]},{"name":"進階題 7/10","rule":"經典 4×4：每列/每行/每個 2×2 宮都要填入 1～4（不重複）。難度：已給 8 格（10 題同等難度）。","grid":[[4,0,1,0],[0,1,2,4],[2,4,0,1],[0,0,0,0]],"solution":[[4,2,1,3],[3,1,2,4],[2,4,3,1],[1,3,4,2]]},{"name":"進階題 8/10","rule":"經典 4×4：每列/每行/每個 2×2 宮都要填入 1～4（不重複）。難度：已給 8 格（10 題同等難度）。","grid":[[3,2,0,0],[4,0,0,0],[0,3,1,4],[0,4,2,0]],"solution":[[3,2,4,1],[4,1,3,2],[2,3,1,4],[1,4,2,3]]},{"name":"進階題 9/10","rule":"經典 4×4：每列/每行/每個 2×2 宮都要填入 1～4（不重複）。難度：已給 8 格（10 題同等難度）。","grid":[[3,2,0,0],[4,0,2,0],[1,0,3,0],[2,0,4,0]],"solution":[[3,2,1,4],[4,1,2,3],[1,4,3,2],[2,3,4,1]]},{"name":"進階題 10/10","rule":"經典 4×4：每列/每行/每個 2×2 宮都要填入 1～4（不重複）。難度：已給 8 格（10 題同等難度）。","grid":[[0,3,0,1],[1,2,3,4],[0,0,0,0],[0,1,0,3]],"solution":[[4,3,2,1],[1,2,3,4],[3,4,1,2],[2,1,4,3]]}];
+  const LS_SUDOKU_BAG = "nt_sudoku_bag_v3";
+  const LS_SUDOKU_POS = "nt_sudoku_pos_v3";
 
   let current = PUZZLES[0];
 
@@ -1847,17 +1860,17 @@ function initSudoku4_CURSOR(){
   let cx=0, cy=0;
 
   // ⭐ 3秒錯誤判斷用：每格一個 pending timer
-  // key -> { timerId, valueAtStart }
   const pending = new Map();
 
   const wrap = document.createElement("div");
   wrap.innerHTML = `
     <div class="hint">
-      <div class="big">迷你數獨：<span id="sdPuzzleName"></span></div>
+      <div class="big">迷你數獨（進階）：<span id="sdPuzzleName"></span></div>
       <div style="margin-top:6px" id="sdRule"></div>
       <div class="small" style="margin-top:6px">
         操作：方向移游標（U/D/L/R），A 在該格循環填 1→2→3→4→空。<br/>
-        錯誤判定：填錯不會立刻算錯，錯誤數字「停留超過 3 秒」才算錯（黃框=等待中）。
+        錯誤判定：填錯不會立刻算錯，錯誤數字「停留超過 3 秒」才算錯（黃框=等待中）。<br/>
+        抽題規則：10 題隨機出題，10 題內不重複；出完自動重新洗牌。
       </div>
     </div>
     <div class="sep"></div>
@@ -1886,12 +1899,42 @@ function initSudoku4_CURSOR(){
     pending.clear();
   }
 
-  function pickPuzzleNext_(){
-    let idx = Number(localStorage.getItem(LS_SUDOKU_PUZZLE_IDX) || "0");
-    if(!Number.isFinite(idx) || idx < 0) idx = 0;
-    const chosen = PUZZLES[idx % PUZZLES.length];
-    localStorage.setItem(LS_SUDOKU_PUZZLE_IDX, String((idx + 1) % PUZZLES.length));
-    return chosen;
+  function shuffle_(arr){
+    for(let i=arr.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [arr[i],arr[j]] = [arr[j],arr[i]];
+    }
+    return arr;
+  }
+
+  function loadBag_(){
+    try{
+      const bag = JSON.parse(localStorage.getItem(LS_SUDOKU_BAG) || "null");
+      if(Array.isArray(bag) && bag.length===PUZZLES.length) return bag;
+    }catch(e){}
+    const fresh = shuffle_(PUZZLES.map((_,i)=>i));
+    localStorage.setItem(LS_SUDOKU_BAG, JSON.stringify(fresh));
+    localStorage.setItem(LS_SUDOKU_POS, "0");
+    return fresh;
+  }
+
+  function nextPuzzle_(){
+    const bag = loadBag_();
+    let pos = Number(localStorage.getItem(LS_SUDOKU_POS) || "0");
+    if(!Number.isFinite(pos) || pos<0) pos = 0;
+
+    if(pos >= bag.length){
+      // 用完一輪 → 重新洗牌
+      const fresh = shuffle_(PUZZLES.map((_,i)=>i));
+      localStorage.setItem(LS_SUDOKU_BAG, JSON.stringify(fresh));
+      localStorage.setItem(LS_SUDOKU_POS, "0");
+      pos = 0;
+      return PUZZLES[fresh[pos]];
+    }
+
+    const idx = bag[pos];
+    localStorage.setItem(LS_SUDOKU_POS, String(pos+1));
+    return PUZZLES[idx];
   }
 
   function setPuzzle_(p){
@@ -1921,7 +1964,6 @@ function initSudoku4_CURSOR(){
         const v = board[y][x];
         el.textContent = v===0 ? "" : v;
 
-        // pending 黃框
         const k = cellKey(x,y);
         if(pending.has(k)) el.classList.add("pending");
 
@@ -1929,14 +1971,12 @@ function initSudoku4_CURSOR(){
           if(!running) return;
           if(fixed[y][x]) return;
 
-          // 每次改值：先取消原本 pending 計時（因為狀態改變了）
           clearPendingFor(x,y);
 
           board[y][x] = (board[y][x] + 1) % 5;
           const newVal = board[y][x];
           const correct = sol[y][x];
 
-          // 若填入非0且錯誤：啟動3秒計時（黃框）
           if(newVal !== 0 && newVal !== correct){
             const timerId = setTimeout(()=>{
               if(!running) return;
@@ -2025,7 +2065,7 @@ function initSudoku4_CURSOR(){
       metric2: errors,
       pass: evalr.pass,
       stars: evalr.stars,
-      notes: evalr.notes + "|" + current.name.replaceAll(" ",""),
+      notes: (evalr.notes || "") + "|ADV10",
       kpi1: `${(ms/1000).toFixed(2)} s`,
       kpi2: `錯誤 ${errors}`
     });
@@ -2053,7 +2093,7 @@ function initSudoku4_CURSOR(){
   window.addEventListener("keydown", onKey, {passive:false});
 
   const onStart = ()=>{
-    setPuzzle_(pickPuzzleNext_());     // ✅ 每次開始換一題（位置不同）
+    setPuzzle_(nextPuzzle_());         // ✅ 隨機抽題，10 題內不重複
     errors=0;
     clearAllPending();
     running=true;
@@ -2065,7 +2105,7 @@ function initSudoku4_CURSOR(){
   };
   window.addEventListener("GAME_START", onStart);
 
-  // 初始（未開始時先顯示第 1 題）
+  // 初始（未開始時先顯示一題）
   setPuzzle_(PUZZLES[0]);
   cx=0; cy=0;
   if(fixed[cy][cx]) findNearestEditable();
@@ -2078,6 +2118,7 @@ function initSudoku4_CURSOR(){
     window.removeEventListener("keydown", onKey);
   };
 }
+
 
 
 
@@ -2125,4 +2166,5 @@ function evaluatePass(level, gameKey, score, metric1, metric2){
 </script>
 </body>
 </html>
+
 
